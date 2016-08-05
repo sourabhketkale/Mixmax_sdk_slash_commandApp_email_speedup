@@ -6,7 +6,10 @@ var _ = require('underscore');
 
 // The Type Ahead API.
 module.exports = function(req, res) {
+
+
   var term = req.query.text.trim();
+  console.log(term);
   if (!term) {
     res.json([{
       title: '<i>(enter a search term)</i>',
@@ -14,48 +17,20 @@ module.exports = function(req, res) {
     }]);
     return;
   }
+  else if(term=="conclude"){
 
-  var response;
-  try {
-    response = sync.await(request({
-      url: 'http://api.giphy.com/v1/gifs/search',
-      qs: {
-        q: term,
-        limit: 15,
-        api_key: key
-      },
-      gzip: true,
-      json: true,
-      timeout: 10 * 1000
-    }, sync.defer()));
-  } catch (e) {
-    res.status(500).send('Error');
-    return;
-  }
+    console.log("captured conclude command");
 
-  if (response.statusCode !== 200 || !response.body || !response.body.data) {
-    res.status(500).send('Error');
-    return;
-  }
-
-  var results = _.chain(response.body.data)
-    .reject(function(image) {
-      return !image || !image.images || !image.images.fixed_height_small;
-    })
-    .map(function(image) {
-      return {
-        title: '<img style="height:75px" src="' + image.images.fixed_height_small.url + '">',
-        text: 'http://giphy.com/' + image.id
-      };
-    })
-    .value();
-
-  if (results.length === 0) {
     res.json([{
-      title: '<i>(no results)</i>',
-      text: ''
+      title: '<i>(end)</i>',
+      text: 'Looking forward to hear from you. Thank you and have a great day ahead.'
     }]);
-  } else {
-    res.json(results);
+  }else if(term=="start"){
+
+    res.json([{
+      title: '<i>(start)</i>',
+      text: 'Greetings for the day !!'
+    }]);
+
   }
 };
